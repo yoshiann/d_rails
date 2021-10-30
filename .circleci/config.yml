@@ -1,0 +1,68 @@
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.1.2
+#  aws-cli: circleci/aws-cli@1.3
+#  aws-ecr: circleci/aws-ecr@6.15
+#  aws-ecs: circleci/aws-ecs@2.0
+
+jobs:
+  build:
+    docker:
+      - image: circleci/ruby:2.7
+    working_directory: ~/do_rails
+    steps:
+      - checkout:
+          path: ~/do_rails
+      - ruby/install-deps
+
+  test:
+    docker:
+      - image: circleci/ruby:2.7
+      - image: circleci/mysql:8.0
+        command: mysqld --default-authentication-plugin=mysql_native_password
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          #MYSQL_DATABASE: do_rails_test
+          #MYSQL_USER: root
+    environment:
+      BUNDLE_JOBS: "3"
+      BUNDLE_RETRY: "3"
+      APP_DATABASE_HOST: "127.0.0.1"
+      RAILS_ENV: test
+    working_directory: ~/do_rails
+    steps:
+      - checkout:
+          path: ~/do_rails
+      - ruby/install-deps
+      - run:
+          name: Database setup
+          command: bundle exec rake db:create && bundle exec rake db:migrate
+      - run:
+          name: test
+          command: bundle exec rake test
+
+  deploy:
+    machine:
+      image: circleci/classic:edge
+    steps:
+#      - ckeckout
+      - add_ssh_keys:
+          fingerprints:
+            - "7f:21:c0:20:2d:51:fe:50:eb:f4:31:19:27:12:e4:cc"
+      - run: ssh ${SSH_USER}@${SSH_HOST} 'cd ~/do_rails && git fetch origin main && git reset --hard origin/main'
+
+workflows:
+  version: 2
+  #build_and_test:
+  build_and_test_and_deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches: 
+              only: main
