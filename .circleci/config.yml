@@ -32,7 +32,7 @@ jobs:
       - checkout
       - add_ssh_keys:
           fingerprints: 
-            - 73:34:0f:70:79:3d:cc:ac:2c:91:89:8f:67:64:df:15
+            - 33:36:12:55:1d:e8:79:3e:43:b6:07:be:c4:19:3f:ad
       - run: chmod 400 ~/.ssh/config
       - run: ssh ${SSH_USER}@${SSH_HOST}
 
