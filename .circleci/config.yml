@@ -34,7 +34,7 @@ jobs:
           fingerprints: 
             - 73:34:0f:70:79:3d:cc:ac:2c:91:89:8f:67:64:df:15
       - run: chmod 400 ~/.ssh/config
-      - run: ssh ec2-user@52.68.119.117
+      - run: ssh ${SSH_USER}@${SSH_HOST}
 
 workflows:
   version: 2
