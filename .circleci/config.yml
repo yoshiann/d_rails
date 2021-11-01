@@ -30,7 +30,7 @@ jobs:
       APP_DATABASE_HOST: "127.0.0.1"
       RAILS_ENV: test
     working_directory: ~/d_rails
-    
+
     steps:
       - checkout:
           path: ~/d_rails
@@ -45,9 +45,12 @@ jobs:
           name: db wait
           command: sleep 10
       - run:
-          name: Database setup
-          command: docker-compose exec prod bundle exec rake db:migrate
+          name: Database setup1
+          command: docker-compose exec prod bundle exec rake db:create
           #command: bundle exec rake db:create && bundle exec rake db:migrate
+      - run:
+          name: Database setup2
+          command: docker-compose exec prod bundle exec rake db:migrate
       - run:
           name: test
           command: docker-compose exec prod bundle exec rake test
