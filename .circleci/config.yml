@@ -6,7 +6,8 @@ orbs:
 #  aws-ecs: circleci/aws-ecs@2.0
 
 jobs:
-  build:
+  machilne:
+    image: circleci/classic:edge
     docker:
       - image: circleci/ruby:2.7
     working_directory: ~/d_rails
@@ -35,8 +36,8 @@ jobs:
       machine: 
         image: circleci/classic:edge
       steps:
-        - checkout:
-            path: ~/d_rails
+        - checkout
+            #path: ~/d_rails
         #- ruby/install-deps
         - run:
             name: Docker build
