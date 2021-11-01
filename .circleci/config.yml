@@ -1,7 +1,5 @@
 version: 2
-
 jobs:
-  
   build:
     # docker-composeがインストール済みの仮想マシンをプル
     machine:
@@ -16,28 +14,55 @@ jobs:
           command: docker-compose up -d
       - run:
           name: db接続を待機
-          command: sleep 10
+          command: sleep 30
       - run:
-          name: データベースのセットアップ
+          name: データベースのセットアップ1
           command: docker-compose exec prod bundle exec rake db:create
       - run:
-          name: データベースのセットアップ
+          name: データベースのセットアップ2
           command: docker-compose exec prod bundle exec rake db:migrate
       - run:
-          name: Dockerコンテナの停止
-          command: docker-compose down
+          name: テスト
+          command: docker-compose exec prod bundle exec rake test 
+
+  deploy:
+    machine:
+      image: circleci/classic:edge
+    steps:
+      - add_ssh_keys:
+          fingerprint: "7f:21:c0:20:2d:51:fe:50:eb:f4:31:19:27:12:e4:cc"
+      - run: ssh ${SSH_USER}@${SSH_HOST} 'cd ~/do_rails && git fetch origin main && git reset --hard origin/main'
 
 workflows:
   version: 2
-  #build_and_test:
   build_and_test_and_deploy:
     jobs:
       - build
+      - deploy:
+          filters:
+            branches:
+              only: main
       
-  #deploy:
-  #  jobs:
-  #    - deploy:
-  #        filters:
-  #          branches:
-  #            only: master
-  #
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
