@@ -34,12 +34,12 @@ jobs:
       - run:
           name: Database setup wait
           command: sleep 30
-      - run:
-          name: Database setup1
-          command: bundle exec rake db:create
+      #- run:
+      #    name: Database setup1
+      #    command: bundle exec rake db:create
       - run:
           name: Database setup2
-          command: bundle exec rake db:migrate
+          command: bundle exec rails db:migrate
       - run:
           name: test
           command: bundle exec rake test
