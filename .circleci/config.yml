@@ -6,8 +6,9 @@ orbs:
 #  aws-ecs: circleci/aws-ecs@2.0
 
 jobs:
-  machilne:
-    image: circleci/classic:edge
+  build:
+    machilne:
+      image: circleci/classic:edge
     docker:
       - image: circleci/ruby:2.7
     working_directory: ~/d_rails
