@@ -1,71 +1,75 @@
-version: 2
+version: 2.1
+orbs:
+  ruby: circleci/ruby@1.1.2
+
 jobs:
   build:
-    # docker-composeがインストール済みの仮想マシンをプル
-    machine:
-      image: circleci/classic:edge
+    docker:
+      - image: circleci/ruby:2.7
+    working_directory: ~/d_rails
     steps:
-      - checkout
+      - checkout:
+          path: ~/d_rails
+      - ruby/install-deps
+
+  test:
+    docker:
+      - image: circleci/ruby:2.7
+      - image: circleci/mysql:8.0
+        command: mysqld --default-authentication-plugin=mysql_native_password
+        environment:
+          MYSQL_ROOT_PASSWORD: password
+          #MYSQL_DATABASE: d_rails_test
+          #MYSQL_USER: root
+    environment:
+      BUNDLE_JOBS: "3"
+      BUNDLE_RETRY: "3"
+      APP_DATABASE_HOST: "127.0.0.1"
+      RAILS_ENV: test
+    working_directory: ~/d_rails
+    steps:
+      - checkout:
+          path: ~/d_rails
+      - ruby/install-deps
       - run:
-          name: Dockerコンテナのビルド
-          command: docker-compose build
-      - run:
-          name: Dockerコンテナの起動
-          command: docker-compose up -d
-      - run:
-          name: db接続を待機
+          name: Database setup wait
           command: sleep 30
       - run:
-          name: データベースのセットアップ1
-          command: docker-compose exec prod bundle exec rake db:create
+          name: Database setup
+          command: bundle exec rake db:create && bundle exec rake db:migrate
       - run:
-          name: データベースのセットアップ2
-          command: docker-compose exec prod bundle exec rake db:migrate
-      - run:
-          name: テスト
-          command: docker-compose exec prod bundle exec rake test 
+          name: test
+          command: bundle exec rake test
 
   deploy:
     machine:
       image: circleci/classic:edge
     steps:
+#      - ckeckout
       - add_ssh_keys:
-          fingerprints: 
+          fingerprints:
             - "73:34:0f:70:79:3d:cc:ac:2c:91:89:8f:67:64:df:15"
       - run: ssh ${SSH_USER}@${SSH_HOST} 'cd ~/d_rails && git fetch origin main && git reset --hard origin/main'
 
 workflows:
   version: 2
+  #build_and_test:
   build_and_test_and_deploy:
     jobs:
       - build
-      - deploy:
+      - test:
           requires:
             - build
+      - deploy:
+          requires:
+            - test
           filters:
-            branches:
+            branches: 
               only: main
-      
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  #deploy:
+  #  jobs:
+  #    - deploy:
+  #        filters:
+  #          branches:
+  #            only: master
+  #
