@@ -34,7 +34,7 @@ jobs:
           fingerprints: 
             - 33:36:12:55:1d:e8:79:3e:43:b6:07:be:c4:19:3f:ad
       - run: chmod 400 ~/.ssh/config
-      - run: ssh ${SSH_USER}@${SSH_HOST}
+      - run: ssh $SSH_USER@$SSH_HOST
 
 workflows:
   version: 2
