@@ -34,12 +34,12 @@ jobs:
     working_directory: ~/d_rails
 
     steps:
-      machine: 
-        image: circleci/classic:edge
+      #machine: 
+      #  image: circleci/classic:edge
       steps:
         - checkout
             #path: ~/d_rails
-        #- ruby/install-deps
+        - ruby/install-deps
         - run:
             name: Docker build
             command: docker-compose build
