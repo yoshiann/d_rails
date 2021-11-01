@@ -9,6 +9,9 @@ jobs:
     steps:
       - checkout
       - run:
+          name: 消去
+          command: docker-compose down -v
+      - run:
           name: Dockerコンテナのビルド
           command: docker-compose build
       - run:
