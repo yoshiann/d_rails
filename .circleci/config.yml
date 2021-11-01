@@ -35,8 +35,8 @@ jobs:
       machine: 
         image: circleci/classic:edge
       steps:
-        - checkout
-            #path: ~/d_rails
+        - checkout:
+            path: ~/d_rails
         #- ruby/install-deps
         - run:
             name: Docker build
