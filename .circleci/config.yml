@@ -21,10 +21,10 @@ jobs:
           name: db接続を待機
           command: sleep 10
       - run:
-          name: データベースのセットアップ
+          name: データベースのセットアップ1
           command: docker-compose exec prod bundle exec rake db:create
       - run:
-          name: データベースのセットアップ
+          name: データベースのセットアップ2
           command: docker-compose exec prod bundle exec rake db:migrate
 
       - run:
