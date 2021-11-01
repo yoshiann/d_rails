@@ -8,9 +8,9 @@ jobs:
       image: circleci/classic:edge
     steps:
       - checkout
-      - run:
-          name: 消去
-          command: docker-compose down -v
+      #- run:
+      #    name: 消去
+      #    command: docker-compose down -v
       - run:
           name: Dockerコンテナのビルド
           command: docker-compose build
@@ -30,9 +30,9 @@ jobs:
       - run:
           name: テスト
           command: docker-compose exec prod bundle exec rake test 
-      - run:
-          name: Dockerコンテナの停止
-          command: docker-compose down -v
+      #- run:
+      #    name: Dockerコンテナの停止
+      #    command: docker-compose down -v
 
 workflows:
   version: 2
