@@ -19,7 +19,10 @@ jobs:
           command: sleep 10
       - run:
           name: データベースのセットアップ
-          command: docker-compose exec web bundle exec rails db:migrate RAILS_ENV=test
+          command: docker-compose exec prod bundle exec rake db:create
+      - run:
+          name: データベースのセットアップ
+          command: docker-compose exec prod bundle exec rake db:migrate
       - run:
           name: Dockerコンテナの停止
           command: docker-compose down
