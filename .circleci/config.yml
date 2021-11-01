@@ -23,9 +23,13 @@ jobs:
       - run:
           name: データベースのセットアップ
           command: docker-compose exec prod bundle exec rake db:migrate
+
+      - run:
+          name: テスト
+          command: docker-compose bundle exec rake test 
       - run:
           name: Dockerコンテナの停止
-          command: docker-compose down
+          command: docker-compose down -v
 
 workflows:
   version: 2
