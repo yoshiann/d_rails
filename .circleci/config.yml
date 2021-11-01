@@ -7,8 +7,8 @@ orbs:
 
 jobs:
   build:
-    machilne:
-      image: circleci/classic:edge
+    #machilne:
+    #  image: circleci/classic:edge
     docker:
       - image: circleci/ruby:2.7
     working_directory: ~/d_rails
