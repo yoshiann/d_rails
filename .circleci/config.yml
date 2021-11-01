@@ -13,7 +13,7 @@ jobs:
     steps:
       - checkout:
           path: ~/d_rails
-      - ruby/install-deps
+      #- ruby/install-deps
 
   test:
     docker:
@@ -33,7 +33,7 @@ jobs:
 
     steps:
       - checkout
-         # path: ~/d_rails
+          path: ~/d_rails
       #- ruby/install-deps
       - run:
           name: Docker build
