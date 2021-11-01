@@ -32,8 +32,8 @@ jobs:
     working_directory: ~/d_rails
 
     steps:
-      - checkout:
-          path: ~/d_rails
+      - checkout
+         # path: ~/d_rails
       #- ruby/install-deps
       - run:
           name: Docker build
