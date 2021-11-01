@@ -36,10 +36,11 @@ jobs:
       - ruby/install-deps
       - run:
           name: Database setup
-          command: bundle exec rake db:create && bundle exec rake db:migrate
-      - run:
-          name: test
-          command: bundle exec rake test
+          command: docker-compose build
+          #command: bundle exec rake db:create && bundle exec rake db:migrate
+      #- run:
+      #    name: test
+      #    command: bundle exec rake test
 
   deploy:
     machine:
