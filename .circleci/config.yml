@@ -7,8 +7,6 @@ orbs:
 
 jobs:
   build:
-    #machilne:
-    #  image: circleci/classic:edge
     docker:
       - image: circleci/ruby:2.7
     working_directory: ~/d_rails
@@ -32,34 +30,16 @@ jobs:
       APP_DATABASE_HOST: "127.0.0.1"
       RAILS_ENV: test
     working_directory: ~/d_rails
-
     steps:
-      #machine: 
-      #  image: circleci/classic:edge
-      steps:
-        - checkout
-            #path: ~/d_rails
-        - ruby/install-deps
-        - run:
-            name: Docker build
-            command: docker-compose build
-        - run:
-            name: Docker up
-            command: docker-compose up -d
-        - run:
-            name: db wait
-            command: sleep 10
-        - run:
-            name: Database setup1
-            command: docker-compose exec prod bundle exec rake db:create
-            #command: bundle exec rake db:create && bundle exec rake db:migrate
-        - run:
-            name: Database setup2
-            command: docker-compose exec prod bundle exec rake db:migrate
-        - run:
-            name: test
-            command: docker-compose exec prod bundle exec rake test
-            #command: bundle exec rake test
+      - checkout:
+          path: ~/d_rails
+      - ruby/install-deps
+      - run:
+          name: Database setup
+          command: bundle exec rake db:create && bundle exec rake db:migrate
+      - run:
+          name: test
+          command: bundle exec rake test
 
   deploy:
     machine:
@@ -68,7 +48,7 @@ jobs:
 #      - ckeckout
       - add_ssh_keys:
           fingerprints:
-            - "73:34:0f:70:79:3d:cc:ac:2c:91:89:8f:67:64:df:15"
+            - "7f:21:c0:20:2d:51:fe:50:eb:f4:31:19:27:12:e4:cc"
       - run: ssh ${SSH_USER}@${SSH_HOST} 'cd ~/d_rails && git fetch origin main && git reset --hard origin/main'
 
 workflows:
@@ -86,3 +66,10 @@ workflows:
           filters:
             branches: 
               only: main
+  #deploy:
+  #  jobs:
+  #    - deploy:
+  #        filters:
+  #          branches:
+  #            only: master
+  #
