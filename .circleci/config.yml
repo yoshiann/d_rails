@@ -7,6 +7,8 @@ orbs:
 
 jobs:
   build:
+    #machilne:
+    #  image: circleci/classic:edge
     docker:
       - image: circleci/ruby:2.7
     working_directory: ~/d_rails
@@ -30,16 +32,34 @@ jobs:
       APP_DATABASE_HOST: "127.0.0.1"
       RAILS_ENV: test
     working_directory: ~/d_rails
+
     steps:
-      - checkout:
-          path: ~/d_rails
-      - ruby/install-deps
-      - run:
-          name: Database setup
-          command: bundle exec rake db:create && bundle exec rake db:migrate
-      - run:
-          name: test
-          command: bundle exec rake test
+      #machine: 
+      #  image: circleci/classic:edge
+      steps:
+        - checkout
+            #path: ~/d_rails
+        - ruby/install-deps
+        - run:
+            name: Docker build
+            command: docker-compose build
+        - run:
+            name: Docker up
+            command: docker-compose up -d
+        - run:
+            name: db wait
+            command: sleep 10
+        - run:
+            name: Database setup1
+            command: docker-compose exec prod bundle exec rake db:create
+            #command: bundle exec rake db:create && bundle exec rake db:migrate
+        - run:
+            name: Database setup2
+            command: docker-compose exec prod bundle exec rake db:migrate
+        - run:
+            name: test
+            command: docker-compose exec prod bundle exec rake test
+            #command: bundle exec rake test
 
   deploy:
     machine:
