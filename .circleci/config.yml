@@ -1,51 +1,36 @@
-version: 2.1
-orbs:
-  ruby: circleci/ruby@1.1.2
-
+version: 2
 jobs:
   build:
-    docker:
-      - image: circleci/ruby:2.7
-    working_directory: ~/d_rails
+    # docker-composeがインストール済みの仮想マシンをプル
+    machine:
+      image: circleci/classic:edge
     steps:
-      - checkout:
-          path: ~/d_rails
-      - ruby/install-deps
-
-  test:
-    docker:
-      - image: circleci/ruby:2.7
-      - image: circleci/mysql:8.0
-        command: mysqld --default-authentication-plugin=mysql_native_password
-        environment:
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_DATABASE: d_rails_test
-          #MYSQL_USER: root
-    environment:
-      BUNDLE_JOBS: "3"
-      BUNDLE_RETRY: "3"
-      APP_DATABASE_HOST: "127.0.0.1"
-      RAILS_ENV: test
-    working_directory: ~/d_rails
-    steps:
-      - checkout:
-          path: ~/d_rails
-      - ruby/install-deps
+      - checkout
       - run:
-          name: Database setup wait
+          name: Dockerコンテナのビルド
+          command: docker-compose build
+      - run:
+          name: Dockerコンテナの起動
+          command: docker-compose up -d
+      - run:
+          name: db接続を待機
           command: sleep 30
       - run:
-          name: Database setup
-          command: bundle exec rails db:migrate
+          name: データベースのセットアップ1
+          command: docker-compose exec prod bundle exec rake db:create
       - run:
-          name: test
-          command: bundle exec rake test
+          name: データベースのセットアップ2
+          command: docker-compose exec prod bundle exec rake db:migrate
+      - run:
+          name: テスト
+          command: docker-compose exec prod bundle exec rake test 
 
   deploy:
     machine:
       image: circleci/classic:edge
     steps:
       - add_ssh_keys:
+          fingerprint: "7f:21:c0:20:2d:51:fe:50:eb:f4:31:19:27:12:e4:cc"
       - run: ssh ${SSH_USER}@${SSH_HOST} 'cd ~/d_rails && git fetch origin main && git reset --hard origin/main'
 
 workflows:
@@ -53,12 +38,33 @@ workflows:
   build_and_test_and_deploy:
     jobs:
       - build
-      - test:
-          requires:
-            - build
       - deploy:
           requires:
-            - test
+            - build
           filters:
-            branches: 
+            branches:
               only: main
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
