@@ -19,7 +19,7 @@ jobs:
           command: docker-compose up -d
       - run:
           name: db接続を待機
-          command: sleep 10
+          command: sleep 30
       - run:
           name: データベースのセットアップ1
           command: docker-compose exec prod bundle exec rake db:create
